@@ -10,6 +10,16 @@ jobs:
     permissions:
       packages: write
       contents: read
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - context: ./php8.1-composer
+            image: ghcr.io/xima-media/php8.1-composer
+          - context: ./php8.2-composer
+            image: ghcr.io/xima-media/php8.2-composer
+          - context: ./php8.3-composer
+            image: ghcr.io/xima-media/php8.3-composer
 
     steps:
       - name: Checkout
@@ -25,7 +35,7 @@ jobs:
           VERSION=$(curl --silent https://api.github.com/repos/composer/composer/releases/latest | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
           echo "::set-output name=version::$(echo ${VERSION})"
 
-      - name: Log in to Docker Hub
+      - name: Log in to GitHub packages
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
@@ -36,11 +46,12 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: xima-media/php8.1-composer
+          images: ${{ matrix.image }}
 
-      - name: Build and push Docker image
+      - name: Build and publish docker image
         uses: docker/build-push-action@v5
         with:
-          context: ./php8.1-composer
+          context: ${{ matrix.context }}
           push: true
-          tags: ghcr.io/xima-media/php8.1-composer:${{ steps.composer.outputs.version }}
+          tags: ${{ matrix.image }}:${{ steps.composer.outputs.version }}
+          labels: ${{ steps.meta.outputs.labels }}
