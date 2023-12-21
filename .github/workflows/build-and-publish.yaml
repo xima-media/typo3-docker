@@ -1,8 +1,12 @@
 name: Build and publish docker images
+
 on:
   push:
     branches:
       - "*"
+  schedule:
+    - cron: "0 2 * * *"
+
 jobs:
   build:
     name: Build & push docker image
