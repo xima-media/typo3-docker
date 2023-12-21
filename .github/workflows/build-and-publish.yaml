@@ -32,6 +32,6 @@ jobs:
       - name: Build and push Docker image
         uses: docker/build-push-action@v2
         with:
-          context: ./php8.1-composer2
+          context: ./php8.1-composer
           push: true
-          tags: php8.1-composer2:${{ steps.composer.outputs.version }}
+          tags: maikschneider/php8.1-composer:${{ steps.composer.outputs.version }}
