@@ -37,11 +37,11 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: xima-media/php8.1-composer
+          images: xima-media/typo3-docker
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
         with:
           context: ./php8.1-composer
           push: true
-          tags: xima-media/php8.1-composer:${{ steps.composer.outputs.version }}
+          tags: xima-media/typo3-docker:${{ steps.composer.outputs.version }}
