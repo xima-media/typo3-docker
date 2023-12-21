@@ -44,4 +44,4 @@ jobs:
         with:
           context: ./php8.1-composer
           push: true
-          tags: xima-media/typo3-docker:${{ steps.composer.outputs.version }}
+          tags: ghcr.io/xima-media/typo3-docker:${{ steps.composer.outputs.version }}
