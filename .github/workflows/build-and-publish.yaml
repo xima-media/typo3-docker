@@ -55,3 +55,10 @@ jobs:
           push: true
           tags: ${{ matrix.image }}:${{ steps.composer.outputs.version }}
           labels: ${{ steps.meta.outputs.labels }}
+
+      - name: Docker Scout
+        uses: docker/scout-action@v1.2.2
+        with:
+          command: cves
+          image: ${{ matrix.image }}:${{ steps.composer.outputs.version }}
+          only-severities: critical,high
