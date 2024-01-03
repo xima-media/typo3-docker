@@ -56,10 +56,12 @@ jobs:
           tags: ${{ matrix.image }}:${{ steps.composer.outputs.version }}
           labels: ${{ steps.meta.outputs.labels }}
 
-      - name: Anchore Syft SBOM scan
-        id: scan
-        uses: anchore/scan-action@v3
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
         with:
-          image: ${{ matrix.image }}:${{ steps.composer.outputs.version }}
-          fail-build: false
-          output-format: table
+          image-ref: ${{ matrix.image }}:${{ steps.composer.outputs.version }}
+          format: 'table'
+          exit-code: '1'
+          ignore-unfixed: true
+          vuln-type: 'os,library'
+          severity: 'CRITICAL,HIGH'
