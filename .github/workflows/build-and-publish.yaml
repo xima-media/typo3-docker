@@ -20,10 +20,13 @@ jobs:
         include:
           - context: ./php8.1-composer
             image: ghcr.io/xima-media/php8.1-composer
+            sarif: php8.1-composer.sarif
           - context: ./php8.2-composer
             image: ghcr.io/xima-media/php8.2-composer
+            sarif: php8.2-composer.sarif
           - context: ./php8.3-composer
             image: ghcr.io/xima-media/php8.3-composer
+            sarif: php8.2-composer.sarif
 
     steps:
       - name: Checkout
@@ -61,7 +64,7 @@ jobs:
         with:
           image-ref: ${{ matrix.image }}:${{ steps.composer.outputs.version }}
           format: 'sarif'
-          output: '${{ matrix.image }}:${{ steps.composer.outputs.version }}.sarif'
+          output: '${{ matrix.sarif }}'
           exit-code: '1'
           ignore-unfixed: true
           vuln-type: 'os,library'
@@ -71,4 +74,4 @@ jobs:
         uses: github/codeql-action/upload-sarif@v2
         if: always()
         with:
-          sarif_file: '${{ matrix.image }}:${{ steps.composer.outputs.version }}.sarif'
+          sarif_file: '${{ matrix.sarif }}'
