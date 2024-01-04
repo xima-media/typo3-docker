@@ -59,6 +59,8 @@ jobs:
           push: true
           tags: ${{ matrix.image }}:${{ steps.composer.outputs.version }}
           labels: ${{ steps.meta.outputs.labels }}
+          build-args: |
+            COMPOSER_VERSION=${{ steps.composer.outputs.version }}
 
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@master
