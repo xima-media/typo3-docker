@@ -39,6 +39,7 @@ RUN set -eux ; \
   # install necessary/useful extensions not included in base image
   install-php-extensions \
     bz2 \
+    mysqli \
     zip \
   ; \
   # install public keys for snapshot and tag validation, see https://composer.github.io/pubkeys.html
