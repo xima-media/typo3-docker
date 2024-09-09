@@ -48,7 +48,7 @@ jobs:
         with:
           image-ref: ghcr.io/xima-media/debian-ansible:${{ steps.date.outputs.date }}
           format: 'sarif'
-          output: 'debian-ansible'
+          output: 'debian-ansible.sarif'
           exit-code: '1'
           ignore-unfixed: true
           vuln-type: 'os,library'
@@ -58,4 +58,4 @@ jobs:
         uses: github/codeql-action/upload-sarif@v2
         if: always()
         with:
-          sarif_file: 'debian-ansible'
+          sarif_file: 'debian-ansible.sarif'
