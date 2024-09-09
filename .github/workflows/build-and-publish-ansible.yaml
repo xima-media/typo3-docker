@@ -33,20 +33,20 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: debian-ansible
+          images: ghcr.io/xima-media/debian-ansible
 
       - name: Build and publish docker image
         uses: docker/build-push-action@v5
         with:
           context: ./debian-ansible
           push: true
-          tags: debian-ansible:${{ steps.date.outputs.date }}
+          tags: ghcr.io/xima-media/debian-ansible:${{ steps.date.outputs.date }}
           labels: ${{ steps.meta.outputs.labels }}
 
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: debian-ansible:${{ steps.date.outputs.date }}
+          image-ref: ghcr.io/xima-media/debian-ansible:${{ steps.date.outputs.date }}
           format: 'sarif'
           output: 'debian-ansible'
           exit-code: '1'
