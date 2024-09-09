@@ -1,4 +1,4 @@
-name: Build and publish docker image for Ansible based on Debian stable
+name: Build and publish docker image for Ansible
 
 on:
   push:
@@ -20,16 +20,20 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
+      - name: Get current date for build tag
+        id: date
+        run: echo "::set-output name=date::$(date +'%Y-%m-%d')"
       - name: Log in to GitHub packages
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Get current date for build tag
-        id: date
-        run: echo "::set-output name=date::$(date +'%Y-%m-%d')"
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: debian-ansible
 
       - name: Build and publish docker image
         uses: docker/build-push-action@v5
@@ -37,6 +41,7 @@ jobs:
           context: ./debian-ansible
           push: true
           tags: debian-ansible:${{ steps.date.outputs.date }}
+          labels: ${{ steps.meta.outputs.labels }}
 
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@master
