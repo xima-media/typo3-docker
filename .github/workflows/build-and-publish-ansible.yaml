@@ -20,33 +20,44 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Get current date for build tag
-        id: date
-        run: echo "::set-output name=date::$(date +'%Y-%m-%d')"
       - name: Log in to GitHub packages
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Extract metadata (tags, labels) for Docker
         id: meta
         uses: docker/metadata-action@v5
         with:
           images: ghcr.io/xima-media/debian-ansible
 
+      - name: Build and publish docker image for testing
+        uses: docker/build-push-action@v5
+        with:
+          context: ./debian-ansible
+          push: true
+          tags: ghcr.io/xima-media/debian-ansible:test
+          labels: ${{ steps.meta.outputs.labels }}
+
+      - name: Test and get Ansible version
+        run: |
+          echo "ANSIBLE_VERSION=$(docker run --rm ghcr.io/xima-media/debian-ansible:test ansible-community --version | cut -d' ' -f4-)" >> $GITHUB_ENV
+        id: test
+
       - name: Build and publish docker image
         uses: docker/build-push-action@v5
         with:
           context: ./debian-ansible
           push: true
-          tags: ghcr.io/xima-media/debian-ansible:${{ steps.date.outputs.date }}
+          tags: ghcr.io/xima-media/debian-ansible:${{ steps.test.outputs.ANSIBLE_VERSION }}
           labels: ${{ steps.meta.outputs.labels }}
 
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: ghcr.io/xima-media/debian-ansible:${{ steps.date.outputs.date }}
+          image-ref: ghcr.io/xima-media/debian-ansible:${{ steps.test.outputs.ANSIBLE_VERSION }}
           format: 'sarif'
           output: 'debian-ansible.sarif'
           exit-code: '1'
