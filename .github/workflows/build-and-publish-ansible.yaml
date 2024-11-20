@@ -27,12 +27,6 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Extract metadata (tags, labels) for Docker
-        id: meta
-        uses: docker/metadata-action@v5
-        with:
-          images: ghcr.io/xima-media/debian-ansible
-
       - name: Build and publish docker image for testing
         uses: docker/build-push-action@v5
         with:
@@ -48,7 +42,7 @@ jobs:
           echo "ANSIBLE_VERSION=$ANSIBLE_VERSION" >> $GITHUB_ENV
         id: test
 
-      - name: Extract metadata (tags, labels) again to get ansible version tag
+      - name: Extract metadata (tags, labels) for Docker
         id: meta
         uses: docker/metadata-action@v5
         with:
