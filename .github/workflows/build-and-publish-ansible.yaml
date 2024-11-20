@@ -48,6 +48,12 @@ jobs:
           echo "ANSIBLE_VERSION=$ANSIBLE_VERSION" >> $GITHUB_ENV
         id: test
 
+      - name: Extract metadata (tags, labels) again to get ansible version tag
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ghcr.io/xima-media/debian-ansible
+
       - name: Build and publish docker image
         uses: docker/build-push-action@v5
         with:
