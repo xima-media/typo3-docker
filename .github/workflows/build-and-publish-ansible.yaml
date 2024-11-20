@@ -45,7 +45,7 @@ jobs:
         run: |
           ANSIBLE_VERSION="$(docker run --rm ghcr.io/xima-media/debian-ansible:test ansible-community --version | cut -d' ' -f4-)"
           echo "$ANSIBLE_VERSION"
-          echo "$ANSIBLE_VERSION" >> $GITHUB_ENV
+          echo "ANSIBLE_VERSION=$ANSIBLE_VERSION" >> $GITHUB_ENV
         id: test
 
       - name: Build and publish docker image
