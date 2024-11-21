@@ -53,13 +53,13 @@ jobs:
         with:
           context: ./debian-ansible
           push: true
-          tags: ghcr.io/xima-media/debian-ansible:${{ steps.test.outputs.ANSIBLE_VERSION }}
+          tags: ghcr.io/xima-media/debian-ansible:${{ env.ANSIBLE_VERSION }}
           labels: ${{ steps.meta.outputs.labels }}
 
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: ghcr.io/xima-media/debian-ansible:${{ steps.test.outputs.ANSIBLE_VERSION }}
+          image-ref: ghcr.io/xima-media/debian-ansible:${{ env.ANSIBLE_VERSION }}
           format: 'sarif'
           output: 'debian-ansible.sarif'
           exit-code: '1'
