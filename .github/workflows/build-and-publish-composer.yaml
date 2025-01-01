@@ -1,9 +1,7 @@
 name: Build and publish docker images for PHP Composer
 
 on:
-  push:
-    branches:
-      - "*"
+  workflow_dispatch:
   schedule:
     - cron: "0 2 1 * *"
 

@@ -1,9 +1,7 @@
 name: Build and publish docker image for Ansible
 
 on:
-  push:
-    branches:
-      - "*"
+  workflow_dispatch:
   schedule:
     - cron: "0 2 1 * *"
 
