@@ -3,14 +3,14 @@
 # usage: /bin/bash ./check_typo3_requirements.sh "packages/xima_sitepackage/composer.json"
 
 # ensure root composer-json is present
-ROOT_COMPOSER_FILE="${PWD}/composer.json"
+ROOT_COMPOSER_FILE="$(pwd)/composer.json"
 if [ ! -f "${ROOT_COMPOSER_FILE}" ]; then
     printf "\\e[0;31mError: Root composer.json is not present in current directory.\n\\e[0m"
     exit 1
 fi
 
 # ensure vendor directory is present
-VENDOR_DIR="${PWD}/vendor"
+VENDOR_DIR="$(pwd)/vendor"
 if [ ! -d "${VENDOR_DIR}" ]; then
     printf "\\e[0;31mError: Vendor directory not present in current directory.\n\\e[0m"
     exit 1
@@ -18,7 +18,7 @@ fi
 
 # Validate path of sitepackage composer.json
 if [[ -n "$1" ]]; then
-    SITEPACKAGE_COMPOSER_JSON="${PWD}/$1"
+    SITEPACKAGE_COMPOSER_JSON="$(pwd)/$1"
     if [ ! -f ${SITEPACKAGE_COMPOSER_JSON} ]; then
         printf "\\e[0;31mError: '${SITEPACKAGE_COMPOSER_JSON}' not found within current directory.\n\\e[0m"
         exit 1
