@@ -1,0 +1,57 @@
+name: Build and publish docker image for sitepackage-req-checker
+
+on:
+  push:
+  schedule:
+    - cron: "0 2 1 * *"
+
+jobs:
+  build:
+    name: Build & push docker image
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+      security-events: write
+      contents: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Log in to GitHub packages
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ghcr.io/xima-media/sitepackage-req-checker
+
+      - name: Build and publish docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./sitepackage-req-checker
+          push: true
+          tags: ghcr.io/xima-media/sitepackage-req-checker:1.0
+          labels: ${{ steps.meta.outputs.labels }}
+
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: ghcr.io/xima-media/sitepackage-req-checker:1.0
+          format: 'sarif'
+          output: 'sitepackage-req-checker.sarif'
+          exit-code: '1'
+          ignore-unfixed: true
+          vuln-type: 'os,library'
+          severity: 'CRITICAL,HIGH'
+
+      - name: Upload Trivy scan results to GitHub Security tab
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: 'sitepackage-req-checker.sarif'
