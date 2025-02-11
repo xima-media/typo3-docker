@@ -1,8 +1,7 @@
 name: Build and publish docker image for sitepackage-req-checker
 
 on:
-  #workflow_dispatch:
-  push:
+  workflow_dispatch:
   schedule:
     - cron: "0 2 1 * *"
 
