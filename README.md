@@ -14,3 +14,7 @@ These images are just like the original [composer images](https://hub.docker.com
 ## Ansible
 
 Debian stable image with packages for ansible provisioning.
+
+## Sitepackage-req-checker
+
+Ensure TYPO3 site package requirement list is complete.
