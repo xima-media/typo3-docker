@@ -28,14 +28,14 @@ jobs:
       - name: Build and publish docker image for testing
         uses: docker/build-push-action@v5
         with:
-          context: ./debian-ansible
+          context: ./ansible
           push: true
-          tags: ghcr.io/xima-media/debian-ansible:test
+          tags: ghcr.io/xima-media/ansible:test
           labels: ${{ steps.meta.outputs.labels }}
 
       - name: Test and get Ansible version
         run: |
-          ANSIBLE_VERSION="$(docker run --rm ghcr.io/xima-media/debian-ansible:test ansible-community --version | cut -d' ' -f4-)"
+          ANSIBLE_VERSION="$(docker run --rm ghcr.io/xima-media/ansible:test ansible --version | grep -oP '(?<=\[core\s)\d+\.\d+\.\d+(?=\])')"
           echo "$ANSIBLE_VERSION"
           echo "ANSIBLE_VERSION=$ANSIBLE_VERSION" >> $GITHUB_ENV
         id: test
@@ -44,22 +44,22 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ghcr.io/xima-media/debian-ansible
+          images: ghcr.io/xima-media/ansible
 
       - name: Build and publish docker image
         uses: docker/build-push-action@v5
         with:
-          context: ./debian-ansible
+          context: ./ansible
           push: true
-          tags: ghcr.io/xima-media/debian-ansible:${{ env.ANSIBLE_VERSION }}
+          tags: ghcr.io/xima-media/ansible:${{ env.ANSIBLE_VERSION }}
           labels: ${{ steps.meta.outputs.labels }}
 
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: ghcr.io/xima-media/debian-ansible:${{ env.ANSIBLE_VERSION }}
+          image-ref: ghcr.io/xima-media/ansible:${{ env.ANSIBLE_VERSION }}
           format: 'sarif'
-          output: 'debian-ansible.sarif'
+          output: 'ansible.sarif'
           exit-code: '1'
           ignore-unfixed: true
           vuln-type: 'os,library'
@@ -70,4 +70,4 @@ jobs:
         uses: github/codeql-action/upload-sarif@v3
         if: always()
         with:
-          sarif_file: 'debian-ansible.sarif'
+          sarif_file: 'ansible.sarif'
