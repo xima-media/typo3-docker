@@ -7,7 +7,7 @@ COPY ./requirements.yml /tmp/requirements.yml
 RUN apt update -yqq \
     && apt install -yqq \
         openssh-client git curl wget gpg unzip \
-        sshpass python3-paramiko python3-passlib \
+        sshpass python3-paramiko python3-passlib python3-netaddr \
         jq yamllint
 
 # Ansible with collections https://docs.ansible.com/ansible/latest/installation_guide/installation_distros.html#installing-ansible-on-debian
