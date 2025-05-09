@@ -25,7 +25,7 @@ jobs:
             sarif: php8.2-composer.sarif
           - context: ./php8.3-composer
             image: ghcr.io/xima-media/php8.3-composer
-            sarif: php8.2-composer.sarif
+            sarif: php8.3-composer.sarif
           - context: ./php8.4-composer
             image: ghcr.io/xima-media/php8.4-composer
             sarif: php8.4-composer.sarif
