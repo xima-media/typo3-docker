@@ -2,26 +2,26 @@ FROM php:8.2-alpine AS binary-with-runtime
 
 RUN set -eux ; \
   apk add --no-cache --virtual .composer-rundeps \
+    7zip \
     bash \
     coreutils \
     git \
     make \
+    mercurial \
     openssh-client \
     patch \
     subversion \
     tini \
     unzip \
-    zip \
-    $([ "$(apk --print-arch)" != "x86" ] && echo mercurial) \
-    $([ "$(apk --print-arch)" != "armhf" ] && echo p7zip)
+    zip
 
 RUN printf "# composer php cli ini settings\n\
 date.timezone=UTC\n\
 memory_limit=-1\n\
 " > $PHP_INI_DIR/php-cli.ini
 
-ENV COMPOSER_ALLOW_SUPERUSER 1
-ENV COMPOSER_HOME /tmp
+ENV COMPOSER_ALLOW_SUPERUSER=1
+ENV COMPOSER_HOME=/tmp
 ARG COMPOSER_VERSION=""
 
 RUN set -eux ; \
