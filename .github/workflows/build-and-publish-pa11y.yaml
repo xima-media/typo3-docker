@@ -1,0 +1,41 @@
+name: Build and publish pa11y-ci image
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 2 1 * *"
+
+jobs:
+  build:
+    name: Build & push docker image
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+      contents: read
+    strategy:
+      fail-fast: false
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Log in to GitHub packages
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ghcr.io/xima-media/pa11y-ci
+
+      - name: Build and publish docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./pa11y-ci
+          push: true
+          tags: ghcr.io/xima-media/pa11y-ci:3.1.0
+          labels: ${{ steps.meta.outputs.labels }}
