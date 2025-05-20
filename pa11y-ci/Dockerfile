@@ -6,4 +6,4 @@ RUN npm install -g pa11y-ci@3.1.0 puppeteer
 
 COPY config.json /pa11y-configs/.pa11yci
 
-COPY gitlab-accessibility.sh /gitlab-accessibility.sh
+COPY --chmod=0755 gitlab-accessibility.sh /gitlab-accessibility.sh
