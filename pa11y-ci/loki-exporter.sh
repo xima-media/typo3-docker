@@ -36,39 +36,55 @@ LOKI_LABEL_JOB="${LOKI_LABEL_JOB:-pa11y}"
 # Set timestamp for metrics
 TIMESTAMP=$(date +%s%N)
 
+# Extract summary data from the report
+TOTAL=$(jq -r '.total' "${ACCESSIBILITY_REPORT}")
+PASSES=$(jq -r '.passes' "${ACCESSIBILITY_REPORT}")
+ERRORS=$(jq -r '.errors' "${ACCESSIBILITY_REPORT}")
+
 # Extract URLs and their errors
 jq -c '.results | to_entries[]' "${ACCESSIBILITY_REPORT}" | while read -r url_entry; do
     # Extract URL
     URL=$(echo "$url_entry" | jq -r '.key')
 
-    # Process each issue separately for this URL
-    echo "$url_entry" | jq -c '.value[]' | while read -r issue; do
-        # Create issue with URL
-        ISSUE_WITH_URL=$(jq -n --arg url "$URL" --argjson issue "$issue" \
-                          '{ "url": $url } + $issue')
+    # Check if this URL has any issues
+    ISSUES_COUNT=$(echo "$url_entry" | jq -r '.value | length')
 
-        # Create a Loki payload for this single issue
+    if [[ $ISSUES_COUNT -eq 0 ]]; then
+        # For URLs with no issues, just send URL and totals
+        SUMMARY_DATA=$(jq -n --arg url "$URL" \
+                         --arg total "$TOTAL" \
+                         --arg passes "$PASSES" \
+                         --arg errors "$ERRORS" \
+        '{
+          "url": $url,
+          "total": $total,
+          "passes": $passes,
+          "errors": $errors,
+          "has_issues": "false"
+        }' | jq -c .)
+
+        # Create Loki payload with just URL and summary
         PAYLOAD=$(jq -n --arg timestamp "${TIMESTAMP}" \
                      --arg project "${LOKI_LABEL_PROJECT}" \
                      --arg instance "${LOKI_LABEL_INSTANCE}" \
                      --arg team "${LOKI_LABEL_TEAM}" \
                      --arg job "${LOKI_LABEL_JOB}" \
-                     --arg issue_data "${ISSUE_WITH_URL}" \
-'{
-  "streams": [
-    {
-      "stream": {
-        "project": $project,
-        "team": $team,
-        "instance": $instance,
-        "job": $job
-      },
-      "values": [
-        [$timestamp, $issue_data]
-      ]
-    }
-  ]
-}')
+                     --arg summary_data "${SUMMARY_DATA}" \
+        '{
+          "streams": [
+            {
+              "stream": {
+                "project": $project,
+                "team": $team,
+                "instance": $instance,
+                "job": $job
+              },
+              "values": [
+                [$timestamp, $summary_data]
+              ]
+            }
+          ]
+        }')
 
         # Send to Loki
         curl -s -X POST \
@@ -76,5 +92,57 @@ jq -c '.results | to_entries[]' "${ACCESSIBILITY_REPORT}" | while read -r url_en
                 -u "${LOKI_API_BASICAUTH}" \
                 --data "${PAYLOAD}" \
                 "${LOKI_API_PUSH_URL}"
-    done
+    else
+        # Process each issue for URLs with findings
+        echo "$url_entry" | jq -c '.value[]' | while read -r issue; do
+            # Create combined data with summary and issue
+            COMBINED_DATA=$(jq -n --arg url "$URL" \
+                               --argjson issue "$issue" \
+                               --arg total "$TOTAL" \
+                               --arg passes "$PASSES" \
+                               --arg errors "$ERRORS" \
+            '{
+              "url": $url,
+              "total": $total,
+              "passes": $passes,
+              "errors": $errors,
+              "has_issues": "true"
+            } + $issue |
+            # Handle nested objects
+            if .runnerExtras then
+              .runnerExtras_str = (.runnerExtras | tostring) |
+              del(.runnerExtras)
+            else . end' | jq -c .)
+
+            # Create a Loki payload for this combined data
+            PAYLOAD=$(jq -n --arg timestamp "${TIMESTAMP}" \
+                         --arg project "${LOKI_LABEL_PROJECT}" \
+                         --arg instance "${LOKI_LABEL_INSTANCE}" \
+                         --arg team "${LOKI_LABEL_TEAM}" \
+                         --arg job "${LOKI_LABEL_JOB}" \
+                         --arg combined_data "${COMBINED_DATA}" \
+            '{
+              "streams": [
+                {
+                  "stream": {
+                    "project": $project,
+                    "team": $team,
+                    "instance": $instance,
+                    "job": $job
+                  },
+                  "values": [
+                    [$timestamp, $combined_data]
+                  ]
+                }
+              ]
+            }')
+
+            # Send to Loki
+            curl -s -X POST \
+                    -H "Content-Type: application/json" \
+                    -u "${LOKI_API_BASICAUTH}" \
+                    --data "${PAYLOAD}" \
+                    "${LOKI_API_PUSH_URL}"
+        done
+    fi
 done
