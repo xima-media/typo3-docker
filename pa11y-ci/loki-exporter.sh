@@ -14,17 +14,17 @@ fi
 
 # Ensure required variables are set
 if [[ -z "${LOKI_API_BASICAUTH}" ]]; then
-    echo "Error: {LOKI_API_BASICAUTH} must be set."
+    echo "Error: ${LOKI_API_BASICAUTH} must be set."
     exit 1
 fi
 
 if [[ -z "${LOKI_API_PUSH_URL}" ]]; then
-    echo "Error: {LOKI_API_PUSH_URL} must be set."
+    echo "Error: ${LOKI_API_PUSH_URL} must be set."
     exit 1
 fi
 
 if [[ -z "${LOKI_LABEL_TEAM}" ]]; then
-    echo "Error: {LOKI_LABEL_TEAM} must be set."
+    echo "Error: ${LOKI_LABEL_TEAM} must be set."
     exit 1
 fi
 
