@@ -13,18 +13,18 @@ if [[ ! -f "${ACCESSIBILITY_REPORT}" ]]; then
 fi
 
 # Ensure required variables are set
-if [[ -z "$LOKI_API_BASICAUTH" ]]; then
-    echo "Error: LOKI_API_BASICAUTH must be set."
+if [[ -z "${LOKI_API_BASICAUTH}" ]]; then
+    echo "Error: {LOKI_API_BASICAUTH} must be set."
     exit 1
 fi
 
-if [[ -z "$LOKI_API_PUSH_URL" ]]; then
-    echo "Error: LOKI_API_PUSH_URL must be set."
+if [[ -z "${LOKI_API_PUSH_URL}" ]]; then
+    echo "Error: {LOKI_API_PUSH_URL} must be set."
     exit 1
 fi
 
-if [[ -z "$LOKI_LABEL_TEAM" ]]; then
-    echo "Error: LOKI_LABEL_TEAM must be set."
+if [[ -z "${LOKI_LABEL_TEAM}" ]]; then
+    echo "Error: {LOKI_LABEL_TEAM} must be set."
     exit 1
 fi
 
@@ -48,12 +48,12 @@ jq -c '.results | to_entries[]' "${ACCESSIBILITY_REPORT}" | while read -r url_en
                           '{ "url": $url } + $issue')
 
         # Create a Loki payload for this single issue
-        PAYLOAD=$(jq -n --arg timestamp "$TIMESTAMP" \
-                     --arg project "$LOKI_LABEL_PROJECT" \
-                     --arg instance "$LOKI_LABEL_INSTANCE" \
-                     --arg team "$LOKI_LABEL_TEAM" \
-                     --arg job "$LOKI_LABEL_JOB" \
-                     --arg issue_data "$ISSUE_WITH_URL" \
+        PAYLOAD=$(jq -n --arg timestamp "${TIMESTAMP}" \
+                     --arg project "${LOKI_LABEL_PROJECT}" \
+                     --arg instance "${LOKI_LABEL_INSTANCE}" \
+                     --arg team "${LOKI_LABEL_TEAM}" \
+                     --arg job "${LOKI_LABEL_JOB}" \
+                     --arg issue_data "${ISSUE_WITH_URL}" \
 '{
   "streams": [
     {
