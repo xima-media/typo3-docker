@@ -59,8 +59,7 @@ jq -c '.results | to_entries[]' "${ACCESSIBILITY_REPORT}" | while read -r url_en
           "url": $url,
           "total": $total,
           "passes": $passes,
-          "errors": $errors,
-          "has_issues": "false"
+          "errors": $errors
         }' | jq -c .)
 
         # Create Loki payload with just URL and summary
@@ -105,8 +104,7 @@ jq -c '.results | to_entries[]' "${ACCESSIBILITY_REPORT}" | while read -r url_en
               "url": $url,
               "total": $total,
               "passes": $passes,
-              "errors": $errors,
-              "has_issues": "true"
+              "errors": $errors
             } + $issue |
             # Handle nested objects
             if .runnerExtras then
