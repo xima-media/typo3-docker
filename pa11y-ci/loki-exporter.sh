@@ -13,7 +13,7 @@ if [[ ! -f "${ACCESSIBILITY_REPORT}" ]]; then
 fi
 
 # Ensure required variables are set
-if [[ -z "$LOKI_API_BASICAUTH"]]; then
+if [[ -z "$LOKI_API_BASICAUTH" ]]; then
     echo "Error: LOKI_API_BASICAUTH must be set."
     exit 1
 fi
