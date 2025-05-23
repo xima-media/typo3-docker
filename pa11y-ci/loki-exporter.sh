@@ -57,9 +57,9 @@ jq -c '.results | to_entries[]' "${ACCESSIBILITY_REPORT}" | while read -r url_en
                          --arg errors "$ERRORS" \
         '{
           "url": $url,
-          "total": $total,
-          "passes": $passes,
-          "errors": $errors
+          "report_total": $total,
+          "report_passes": $passes,
+          "report_errors": $errors
         }' | jq -c .)
 
         # Create Loki payload with just URL and summary
