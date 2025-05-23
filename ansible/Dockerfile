@@ -6,7 +6,7 @@ COPY ./requirements.yml /tmp/requirements.yml
 # base packages
 RUN apt update -yqq \
     && apt install -yqq \
-        openssh-client git curl wget gpg unzip \
+        openssh-client git curl wget gpg unzip rsync \
         sshpass python3-paramiko python3-passlib python3-netaddr \
         jq yamllint
 
