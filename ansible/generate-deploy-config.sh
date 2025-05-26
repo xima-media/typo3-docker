@@ -1,16 +1,10 @@
 #!/bin/bash
-# filepath: /usr/local/bin/generate-deploy-config
+# filepath: /usr/local/bin/generate-deploy-config.sh
 # Generate JSON configuration for deploy.sh from environment variables
 
 set -eo pipefail
 
-OUTPUT_FILE="${1:-/tmp/deploy_config.json}"
-
-# Check if jq is installed
-if ! command -v jq &> /dev/null; then
-    echo "Error: jq is required but not installed. Please install it first." >&2
-    exit 1
-fi
+OUTPUT_FILE=$1
 
 # Create base JSON structure with all required fields
 jq -n \
