@@ -1,7 +1,12 @@
 FROM debian:bookworm-slim
 ARG UBUNTU_CODENAME=jammy
 
+# Required ansible galaxy modules
 COPY ./requirements.yml /tmp/requirements.yml
+
+# Add the config generator script
+COPY generate-deploy-config.sh /usr/local/bin/
+RUN chmod +x /usr/local/bin/generate-deploy-config.sh
 
 # base packages
 RUN apt update -yqq \
