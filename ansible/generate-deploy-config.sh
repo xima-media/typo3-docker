@@ -1,16 +1,10 @@
 #!/bin/bash
-# filepath: /usr/local/bin/generate-deploy-config
+# filepath: /usr/local/bin/generate-deploy-config.sh
 # Generate JSON configuration for deploy.sh from environment variables
 
 set -eo pipefail
 
-OUTPUT_FILE="${1:-/tmp/deploy_config.json}"
-
-# Check if jq is installed
-if ! command -v jq &> /dev/null; then
-    echo "Error: jq is required but not installed. Please install it first." >&2
-    exit 1
-fi
+OUTPUT_FILE=$1
 
 # Create base JSON structure with all required fields
 jq -n \
@@ -21,7 +15,6 @@ jq -n \
   --arg image "${DEPLOY_IMAGE:-}" \
   --arg domain_primary "${DEPLOY_DOMAIN_PRIMARY:-}" \
   --arg app_port "${DEPLOY_APP_PORT:-}" \
-  --arg unique_id "${DEPLOY_UNIQUE_ID:-}" \
   --argjson rollback "$(echo "${DEPLOY_ROLLBACK:-true}" | tr '[:upper:]' '[:lower:]')" \
   '{
     "project_name": $project_name,
@@ -31,7 +24,6 @@ jq -n \
     "image": $image,
     "domain_primary": $domain_primary,
     "app_port": $app_port,
-    "unique_id": $unique_id,
     "rollback": $rollback,
     "domain_aliases": [],
     "secrets": {}
@@ -76,7 +68,5 @@ mv "${OUTPUT_FILE}.tmp" "${OUTPUT_FILE}"
 chmod 600 "${OUTPUT_FILE}"  # Secure permissions for potential secrets
 
 echo "JSON configuration generated at ${OUTPUT_FILE}"
-echo "Contents:"
-jq . "${OUTPUT_FILE}"
 
 exit 0
