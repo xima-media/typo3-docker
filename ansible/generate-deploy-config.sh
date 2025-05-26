@@ -21,7 +21,6 @@ jq -n \
   --arg image "${DEPLOY_IMAGE:-}" \
   --arg domain_primary "${DEPLOY_DOMAIN_PRIMARY:-}" \
   --arg app_port "${DEPLOY_APP_PORT:-}" \
-  --arg unique_id "${DEPLOY_UNIQUE_ID:-}" \
   --argjson rollback "$(echo "${DEPLOY_ROLLBACK:-true}" | tr '[:upper:]' '[:lower:]')" \
   '{
     "project_name": $project_name,
@@ -31,7 +30,6 @@ jq -n \
     "image": $image,
     "domain_primary": $domain_primary,
     "app_port": $app_port,
-    "unique_id": $unique_id,
     "rollback": $rollback,
     "domain_aliases": [],
     "secrets": {}
@@ -76,7 +74,5 @@ mv "${OUTPUT_FILE}.tmp" "${OUTPUT_FILE}"
 chmod 600 "${OUTPUT_FILE}"  # Secure permissions for potential secrets
 
 echo "JSON configuration generated at ${OUTPUT_FILE}"
-echo "Contents:"
-jq . "${OUTPUT_FILE}"
 
 exit 0
