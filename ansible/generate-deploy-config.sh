@@ -26,7 +26,8 @@ jq -n \
     "app_port": $app_port,
     "rollback": $rollback,
     "domain_aliases": [],
-    "secrets": {}
+    "secrets": {},
+    "cronjobs": []
   }' > "${OUTPUT_FILE}.tmp"
 
 # Process domain aliases if defined
@@ -61,6 +62,33 @@ if [[ -n "${DEPLOY_SECRETS:-}" ]]; then
 
   # Clean up
   rm -f /tmp/secrets.tmp
+fi
+
+# Process cronjobs if defined
+if [[ -n "${DEPLOY_CRONJOBS:-}" ]]; then
+  # Write cronjobs to temporary file
+  echo "${DEPLOY_CRONJOBS}" > /tmp/cronjobs.tmp
+
+  # Initialize empty cronjobs array
+  CRONJOBS_JSON="[]"
+
+  # Process each line in the CSV format: schedule,user,command
+  while IFS=, read -r schedule user command; do
+      # Create cronjob object and add to array
+      CRONJOB=$(jq -n \
+        --arg schedule "$schedule" \
+        --arg user "$user" \
+        --arg command "$command" \
+        '{schedule: $schedule, user: $user, command: $command}')
+      CRONJOBS_JSON=$(echo "${CRONJOBS_JSON}" | jq --argjson job "${CRONJOB}" '. + [$job]')
+  done < /tmp/cronjobs.tmp
+
+  # Add cronjobs to main config
+  jq --argjson cronjobs "${CRONJOBS_JSON}" '.cronjobs = $cronjobs' "${OUTPUT_FILE}.tmp" > "${OUTPUT_FILE}.tmp2" &&
+    mv "${OUTPUT_FILE}.tmp2" "${OUTPUT_FILE}.tmp"
+
+  # Clean up
+  rm -f /tmp/cronjobs.tmp
 fi
 
 # Move temporary file to final location
