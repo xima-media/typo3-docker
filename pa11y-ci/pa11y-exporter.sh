@@ -60,21 +60,21 @@ EOF
 
 # Process issues for each URL
 jq -c '.results | to_entries[]' "${ACCESSIBILITY_REPORT}" | while read -r url_entry; do
-    URL=$(echo "$url_entry" | jq -r '.key')
+    URL=$(echo "${url_entry}" | jq -r '.key')
     # Escape quotes and backslashes in URL
-    URL_ESCAPED=$(echo "$URL" | sed 's/\\/\\\\/g' | sed 's/"/\\"/g')
+    URL_ESCAPED=$(echo "${URL}" | sed 's/\\/\\\\/g' | sed 's/"/\\"/g')
 
-    echo "$url_entry" | jq -c '.value[]' | while read -r issue; do
-        CODE=$(echo "$issue" | jq -r '.code // "unknown"')
-        TYPE=$(echo "$issue" | jq -r '.type // "unknown"')
-        MESSAGE=$(echo "$issue" | jq -r '.message // "No message provided"')
-        SELECTOR=$(echo "$issue" | jq -r '.selector // "No selector"')
-        TYPECODE=$(echo "$issue" | jq -r '.typeCode // "0"')
+    echo "${url_entry}" | jq -c '.value[]' | while read -r issue; do
+        CODE=$(echo "${issue}" | jq -r '.code // "unknown"')
+        TYPE=$(echo "${issue}" | jq -r '.type // "unknown"')
+        MESSAGE=$(echo "${issue}" | jq -r '.message // "No message provided"')
+        SELECTOR=$(echo "${issue}" | jq -r '.selector // "No selector"')
+        TYPECODE=$(echo "${issue}" | jq -r '.typeCode // "0"')
 
         # Escape quotes and backslashes in values
-        CODE_ESCAPED=$(echo "$CODE" | sed 's/\\/\\\\/g' | sed 's/"/\\"/g')
-        MESSAGE_ESCAPED=$(echo "$MESSAGE" | sed 's/\\/\\\\/g' | sed 's/"/\\"/g')
-        SELECTOR_ESCAPED=$(echo "$SELECTOR" | sed 's/\\/\\\\/g' | sed 's/"/\\"/g')
+        CODE_ESCAPED=$(echo "${CODE}" | sed 's/\\/\\\\/g' | sed 's/"/\\"/g')
+        MESSAGE_ESCAPED=$(echo "${MESSAGE}" | sed 's/\\/\\\\/g' | sed 's/"/\\"/g')
+        SELECTOR_ESCAPED=$(echo "${SELECTOR}" | sed 's/\\/\\\\/g' | sed 's/"/\\"/g')
 
         # Truncate very long values to avoid Prometheus limits (max 1024 bytes)
         if [ ${#MESSAGE_ESCAPED} -gt 900 ]; then
@@ -84,8 +84,8 @@ jq -c '.results | to_entries[]' "${ACCESSIBILITY_REPORT}" | while read -r url_en
             SELECTOR_ESCAPED="${SELECTOR_ESCAPED:0:900}..."
         fi
 
-        if [[ "$CODE" != "unknown" && "$TYPE" != "unknown" &&
-              "$MESSAGE" != "No message provided" && "$SELECTOR" != "No selector" ]]; then
+        if [[ "${CODE}" != "unknown" && "${TYPE}" != "unknown" &&
+              "${MESSAGE}" != "No message provided" && "${SELECTOR}" != "No selector" ]]; then
             VALUE="1"
         else
             VALUE="0"
@@ -105,7 +105,7 @@ echo "Pushing metrics to Pushgateway at ${PROM_PUSH_URL}/metrics/${GROUPING}"
 curl -s -X POST \
     -u "${PROM_AUTH}" \
     -H "Content-Type: text/plain" \
-    --data-binary @"$METRICS_FILE" \
+    --data-binary @"${METRICS_FILE}" \
     "${PROM_PUSH_URL}/metrics/${GROUPING}"
 
 if [ $? -eq 0 ]; then
