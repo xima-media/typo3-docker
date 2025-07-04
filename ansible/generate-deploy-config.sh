@@ -15,6 +15,7 @@ jq -n \
   --arg image "${DEPLOY_IMAGE:-}" \
   --arg domain_primary "${DEPLOY_DOMAIN_PRIMARY:-}" \
   --arg app_port "${DEPLOY_APP_PORT:-}" \
+  --arg docker_compose_base64 "${DEPLOY_DOCKER_COMPOSE_BASE64:-}" \
   --argjson rollback "$(echo "${DEPLOY_ROLLBACK:-true}" | tr '[:upper:]' '[:lower:]')" \
   '{
     "project_name": $project_name,
@@ -25,6 +26,7 @@ jq -n \
     "domain_primary": $domain_primary,
     "app_port": $app_port,
     "rollback": $rollback,
+    "docker_compose": $docker_compose_base64,
     "domain_aliases": [],
     "secrets": {},
     "cronjobs": []
