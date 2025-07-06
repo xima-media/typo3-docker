@@ -74,14 +74,13 @@ if [[ -n "${DEPLOY_CRONJOBS:-}" ]]; then
   # Initialize empty cronjobs array
   CRONJOBS_JSON="[]"
 
-  # Process each line in the CSV format: schedule,user,command
-  while IFS=, read -r schedule user command; do
+  # Process each line in the CSV format: schedule,command
+  while IFS=, read -r schedule command; do
       # Create cronjob object and add to array
       CRONJOB=$(jq -n \
         --arg schedule "$schedule" \
-        --arg user "$user" \
         --arg command "$command" \
-        '{schedule: $schedule, user: $user, command: $command}')
+        '{schedule: $schedule, command: $command}')
       CRONJOBS_JSON=$(echo "${CRONJOBS_JSON}" | jq --argjson job "${CRONJOB}" '. + [$job]')
   done < /tmp/cronjobs.tmp
 
