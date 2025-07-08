@@ -8,8 +8,11 @@ COPY ./requirements.yml /tmp/requirements.yml
 COPY generate-deploy-config.sh /usr/local/bin/
 
 RUN apk update \
+    # Upgrade existing packages
+    && apk upgrade --no-cache \
+    # Install packages
     && apk add --no-cache \
-        # Install additional tools
+        # Additional tools
         git \
         curl \
         wget \
@@ -17,7 +20,7 @@ RUN apk update \
         unzip \
         jq \
         yamllint \
-        # Install Ansible
+        # Ansible
         ansible bash openssh sshpass rsync py3-passlib py3-netaddr \
     # Install Ansible collections
     && ansible-galaxy install -v -r /tmp/requirements.yml \
