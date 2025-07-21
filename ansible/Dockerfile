@@ -14,6 +14,7 @@ RUN apk update \
         unzip \
         jq \
         yamllint \
+        gettext-envsubst \
         # Ansible
         ansible bash openssh sshpass rsync py3-passlib py3-netaddr
 
