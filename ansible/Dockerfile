@@ -23,7 +23,4 @@ COPY ./requirements.yml /tmp/requirements.yml
 RUN ansible-galaxy install -v -r /tmp/requirements.yml \
     && rm /tmp/requirements.yml
 
-# Add the config generator script and set permissions
-COPY --chmod=755 generate-deploy-config.sh /usr/local/bin/generate-deploy-config.sh
-
 CMD ["/bin/bash"]
