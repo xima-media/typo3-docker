@@ -15,6 +15,7 @@ RUN apk update \
         jq \
         yamllint \
         gettext-envsubst \
+        check-jsonschema \
         # Ansible
         ansible bash openssh sshpass rsync py3-passlib py3-netaddr
 
