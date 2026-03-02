@@ -65,6 +65,8 @@ jobs:
           vuln-type: 'os,library'
           severity: 'CRITICAL,HIGH'
           skip-files: '/root/.ansible/collections/ansible_collections/community/general/plugins/modules/java_keystore.py'
+          # fixes https://github.com/aquasecurity/trivy-action/issues/512
+          version: 'v0.69.2'
 
       - name: Upload Trivy scan results to GitHub Security tab
         uses: github/codeql-action/upload-sarif@v4
