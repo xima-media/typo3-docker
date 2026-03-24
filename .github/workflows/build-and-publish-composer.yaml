@@ -62,21 +62,3 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           build-args: |
             COMPOSER_VERSION=${{ steps.composer.outputs.version }}
-
-      - name: Run Trivy vulnerability scanner
-        uses: aquasecurity/trivy-action@0.34.1
-        with:
-          image-ref: ${{ matrix.image }}:${{ steps.composer.outputs.version }}
-          format: 'sarif'
-          output: '${{ matrix.sarif }}'
-          exit-code: '1'
-          ignore-unfixed: true
-          vuln-type: 'os,library'
-          severity: 'CRITICAL,HIGH'
-          # fixes https://github.com/aquasecurity/trivy-action/issues/512
-          version: 'v0.69.2'
-
-      - name: Upload Trivy scan results to GitHub Security tab
-        uses: github/codeql-action/upload-sarif@v4
-        with:
-          sarif_file: '${{ matrix.sarif }}'

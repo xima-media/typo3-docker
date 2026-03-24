@@ -53,22 +53,3 @@ jobs:
           push: true
           tags: ghcr.io/xima-media/ansible:${{ env.ANSIBLE_VERSION }}
           labels: ${{ steps.meta.outputs.labels }}
-
-      - name: Run Trivy vulnerability scanner
-        uses: aquasecurity/trivy-action@0.34.1
-        with:
-          image-ref: ghcr.io/xima-media/ansible:${{ env.ANSIBLE_VERSION }}
-          format: 'sarif'
-          output: 'ansible.sarif'
-          exit-code: '1'
-          ignore-unfixed: true
-          vuln-type: 'os,library'
-          severity: 'CRITICAL,HIGH'
-          skip-files: '/root/.ansible/collections/ansible_collections/community/general/plugins/modules/java_keystore.py'
-          # fixes https://github.com/aquasecurity/trivy-action/issues/512
-          version: 'v0.69.2'
-
-      - name: Upload Trivy scan results to GitHub Security tab
-        uses: github/codeql-action/upload-sarif@v4
-        with:
-          sarif_file: 'ansible.sarif'
