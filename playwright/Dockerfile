@@ -2,9 +2,10 @@ FROM mcr.microsoft.com/playwright:v1.59.1-noble@sha256:b0ab6f3cb99aa7803adbc14d9
 
 WORKDIR /deps
 COPY package*.json ./
-RUN npm install
+RUN npm install --ignore-scripts --allow-git=none
 
 ENV PATH="/deps/node_modules/.bin:$PATH"
+ENV NODE_PATH="/deps/node_modules"
 
 WORKDIR /app
 CMD ["playwright", "test", "--config", "/app/Tests/playwright/playwright.config.js"]
