@@ -4,6 +4,9 @@ WORKDIR /deps
 COPY package*.json ./
 RUN npm install --ignore-scripts --allow-git=none
 
+ENV PLAYWRIGHT_BROWSERS_PATH=0
+RUN npx playwright install --with-deps chromium
+
 ENV PATH="/deps/node_modules/.bin:$PATH"
 ENV NODE_PATH="/deps/node_modules"
 
