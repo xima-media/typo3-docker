@@ -1,0 +1,10 @@
+{
+	"name": "playwright-tests",
+	"version": "1.0.0",
+	"description": "Playwright accessibility tests for all projects",
+	"private": true,
+	"devDependencies": {
+		"@axe-core/playwright": "^4.10.2",
+		"@playwright/test": "1.59.1"
+	}
+}

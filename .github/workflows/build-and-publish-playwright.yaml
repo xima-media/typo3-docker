@@ -1,9 +1,7 @@
-name: Build and publish pa11y-ci image
+name: Build and publish playwright image
 
 on:
   workflow_dispatch:
-  schedule:
-    - cron: "0 2 1 * *"
 
 jobs:
   build:
@@ -12,8 +10,6 @@ jobs:
     permissions:
       packages: write
       contents: read
-    strategy:
-      fail-fast: false
 
     steps:
       - name: Checkout
@@ -30,12 +26,18 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ghcr.io/xima-media/pa11y-ci
+          images: ghcr.io/xima-media/playwright
+
+      - name: Read Playwright version from package.json
+        id: playwright_version
+        run: |
+          VERSION=$(jq -r '.devDependencies["@playwright/test"] | sub("^[^0-9]*"; "")' ./playwright/package.json)
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
 
       - name: Build and publish docker image
         uses: docker/build-push-action@v5
         with:
-          context: ./pa11y-ci
+          context: ./playwright
           push: true
-          tags: ghcr.io/xima-media/pa11y-ci:3.1.0
+          tags: ghcr.io/xima-media/playwright:${{ steps.playwright_version.outputs.version }}
           labels: ${{ steps.meta.outputs.labels }}
