@@ -16,8 +16,12 @@ RUN apk update \
         yamllint \
         gettext-envsubst \
         check-jsonschema \
+        bash \
+        shellcheck \
+        openssh \
+        rsync \
         # Ansible
-        ansible bash openssh sshpass rsync py3-passlib py3-netaddr
+        ansible sshpass py3-passlib py3-netaddr
 
 # Install Ansible collections
 COPY ./requirements.yml /tmp/requirements.yml
