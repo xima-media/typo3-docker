@@ -13,6 +13,7 @@ RUN apk update \
         gnupg \
         unzip \
         jq \
+        yq \
         yamllint \
         gettext-envsubst \
         check-jsonschema \
