@@ -7,6 +7,7 @@ RUN apk update \
     # Install packages
     && apk add --no-cache \
         # Additional tools
+        bind-tools \
         git \
         curl \
         wget \
