@@ -25,23 +25,25 @@ ENV COMPOSER_HOME=/tmp
 ARG COMPOSER_VERSION=""
 
 RUN set -eux ; \
-  # install https://github.com/mlocati/docker-php-extension-installer
-  curl \
-    --silent \
-    --fail \
-    --location \
-    --retry 3 \
-    --output /usr/local/bin/install-php-extensions \
-    --url https://github.com/mlocati/docker-php-extension-installer/releases/download/1.2.58/install-php-extensions \
-  ; \
-  echo 182011b3dca5544a70fdeb587af44ed1760aa9a2ed37d787d0f280a99f92b008e638c37762360cd85583830a097665547849cb2293c4a0ee32c2a36ef7a349e2 /usr/local/bin/install-php-extensions | sha512sum --strict --check ; \
-  chmod +x /usr/local/bin/install-php-extensions ; \
   # install necessary/useful extensions not included in base image
-  install-php-extensions \
+  apk add --no-cache --virtual .build-deps \
+    $PHPIZE_DEPS \
+    bzip2-dev \
+    libzip-dev \
+  ; \
+  docker-php-ext-install -j "$(nproc)" \
     bz2 \
     mysqli \
     zip \
   ; \
+  runDeps="$( \
+    scanelf --needed --nobanner --format '%n#p' --recursive /usr/local/lib/php/extensions \
+      | tr ',' '\n' \
+      | sort -u \
+      | awk 'system("[ -e /usr/local/lib/" $1 " ]") == 0 { next } { print "so:" $1 }' \
+  )" ; \
+  apk add --no-cache --virtual .composer-phpext-rundeps $runDeps ; \
+  apk del --no-network .build-deps ; \
   # install public keys for snapshot and tag validation, see https://composer.github.io/pubkeys.html
   curl \
     --silent \
@@ -79,7 +81,6 @@ RUN set -eux ; \
     --version=${COMPOSER_VERSION} \
   ; \
   composer --ansi --version --no-interaction ; \
-  composer diagnose ; \
   rm -f /tmp/installer.php ; \
   find /tmp -type d -exec chmod -v 1777 {} +
 
