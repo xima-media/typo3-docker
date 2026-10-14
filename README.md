@@ -9,7 +9,9 @@ These images are just like the original [composer images](https://hub.docker.com
 ### Changes
 
 * Line 1: Pin PHP version
-* Line 42: Install PHP extension `mysqli`
+* Line 25: `COMPOSER_VERSION` is a build argument, set by the workflow to the latest Composer release
+* Line 36: Install PHP extension `mysqli`
+* No `composer diagnose`
 
 ## Ansible
 
