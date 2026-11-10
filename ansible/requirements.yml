@@ -5,3 +5,5 @@ collections:
   - community.general
   - community.crypto
   - community.docker
+  - name: community.proxmox
+    version: ">=2.1.0,<3.0.0"
