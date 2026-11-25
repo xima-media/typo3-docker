@@ -12,6 +12,7 @@ These images are just like the original [composer images](https://hub.docker.com
 * Line 25: `COMPOSER_VERSION` is a build argument, set by the workflow to the latest Composer release
 * Line 36: Install PHP extension `mysqli`
 * No `composer diagnose`
+* Ship [`install-php-extensions`](https://github.com/mlocati/docker-php-extension-installer) (major 2, updated with every rebuild)
 
 ## Ansible
 

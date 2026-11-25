@@ -86,6 +86,9 @@ RUN set -eux ; \
 
 COPY docker-entrypoint.sh /docker-entrypoint.sh
 
+# install-php-extensions, used by CI jobs to add extensions like intl or pdo_mysql
+COPY --from=mlocati/php-extension-installer:2 /usr/bin/install-php-extensions /usr/local/bin/
+
 RUN chmod +x /docker-entrypoint.sh
 
 WORKDIR /app
