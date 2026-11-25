@@ -10,9 +10,8 @@ These images are just like the original [composer images](https://hub.docker.com
 
 * Line 1: Pin PHP version
 * Line 25: `COMPOSER_VERSION` is a build argument, set by the workflow to the latest Composer release
-* Line 36: Install PHP extension `mysqli`
+* Lines 37-38: Install PHP extensions `intl` and `mysqli` (TYPO3 requires `ext-intl`; `mysqli` serves as DB driver in CI)
 * No `composer diagnose`
-* Ship [`install-php-extensions`](https://github.com/mlocati/docker-php-extension-installer) (major 2, updated with every rebuild)
 
 ## Ansible
 

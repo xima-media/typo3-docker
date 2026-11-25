@@ -29,10 +29,12 @@ RUN set -eux ; \
   apk add --no-cache --virtual .build-deps \
     $PHPIZE_DEPS \
     bzip2-dev \
+    icu-dev \
     libzip-dev \
   ; \
   docker-php-ext-install -j "$(nproc)" \
     bz2 \
+    intl \
     mysqli \
     zip \
   ; \
@@ -85,9 +87,6 @@ RUN set -eux ; \
   find /tmp -type d -exec chmod -v 1777 {} +
 
 COPY docker-entrypoint.sh /docker-entrypoint.sh
-
-# install-php-extensions, used by CI jobs to add extensions like intl or pdo_mysql
-COPY --from=mlocati/php-extension-installer:2 /usr/bin/install-php-extensions /usr/local/bin/
 
 RUN chmod +x /docker-entrypoint.sh
 
